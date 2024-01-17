@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 20, 15, 15;
+  --background-rgb: 250, 250, 250;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 250, 250, 250;
+    --background-rgb: 20, 15, 15;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+.controller {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  background-color: #ddd;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: #f0f0f0;
+  border: 2px solid #bbb;
+  color: rgb(var(--background-rgb));
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+}
+
+.button.active {
+  background-color: #4caf50;
+  color: white;
+}
+
+.joystick {
+  width: 50px;
+  height: 50px;
+  background-color: #eee;
+  border: 2px solid #bbb;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.joystick.active {
+  background-color: #4caf50;
+}
+
+.joystick__inner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: #333;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
