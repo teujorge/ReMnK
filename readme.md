@@ -46,36 +46,20 @@ cd nextjs
 npm install
 
 # For the Tauri application
-cd ../tauri-app
-npm install
+cd tauri-app
+cargo tauri deps
 
 # For the Rust Listener
-cd ../rust-listener
+cd rust-listener
 cargo build --release
 ```
 
 ### Running the Project
 
-Run whole project:
+Run whole project: This will run all components in parallel.
 
 ```bash
 cargo tauri dev
-```
-
-Run each component separately (for debugging?):
-
-```bash
-# Run the NextJS frontend
-cd nextjs
-npm run dev
-
-# Run the Tauri application
-cd ../tauri-app
-cargo tauri dev
-
-# Run the Rust Listener
-cd ../rust-listener
-cargo run --release
 ```
 
 ## Usage
