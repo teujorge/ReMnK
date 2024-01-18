@@ -3,10 +3,7 @@ use std::sync::mpsc::Sender;
 #[cfg(windows)]
 use named_pipe::PipeOptions;
 #[cfg(unix)]
-use std::os::unix::net::{UnixListener, UnixStream};
-
-pub const IPC_PIPE_NAME: &str = r"\\.\pipe\remnk";
-pub const IPC_SOCKET_PATH: &str = "/tmp/remnk.socket";
+use std::os::unix::net::UnixListener;
 
 pub fn handle_ipc(tx: Sender<String>) {
     #[cfg(unix)]
@@ -21,21 +18,30 @@ pub fn handle_ipc(tx: Sender<String>) {
 
 #[cfg(unix)]
 fn handle_ipc_unix(tx: Sender<String>) {
+    use std::io::{BufRead, BufReader};
+
+    const IPC_SOCKET_PATH: &str = "/tmp/remnk.socket";
+
+    // Delete the existing socket file if it exists (unix)
+    let _ = std::fs::remove_file(IPC_SOCKET_PATH);
+
     let listener = UnixListener::bind(IPC_SOCKET_PATH).expect("Failed to bind to IPC socket");
     for stream in listener.incoming() {
         if let Ok(stream) = stream {
-            thread::spawn(move || {
+            let tx_clone = tx.clone();
+            std::thread::spawn(move || {
                 let reader = BufReader::new(stream);
                 for line in reader.lines() {
                     match line {
                         Ok(key_str) => {
-                            println!("Received message from Unix IPC: {}", key_str);
+                            // println!("Received message from Unix IPC: {}", key_str);
 
                             if key_str.is_empty() {
                                 continue;
                             }
 
-                            tx.send(key_str)
+                            tx_clone
+                                .send(key_str)
                                 .expect("Failed to send key message to Tauri");
                         }
                         Err(e) => {
@@ -52,6 +58,8 @@ fn handle_ipc_unix(tx: Sender<String>) {
 #[cfg(windows)]
 fn handle_ipc_windows(tx: Sender<String>) {
     use std::io::Read;
+
+    const IPC_PIPE_NAME: &str = r"\\.\pipe\remnk";
 
     let connection = PipeOptions::new(IPC_PIPE_NAME)
         .first(true)

@@ -10,15 +10,12 @@ use crate::controller::{virtualize_controller, MouseEventData};
 use std::process::{Child, Command};
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
-use std::{fs, thread};
+use std::thread;
 use tauri::Manager;
 
 fn main() {
     // Create a channel for thread communication
     let (tx, rx): (Sender<String>, Receiver<String>) = mpsc::channel();
-
-    // Delete the existing socket file if it exists
-    let _ = fs::remove_file(ipc::IPC_SOCKET_PATH);
 
     // Create a mutex for the previous mouse event
     let mutex_prev_mouse_event_data = Arc::new(Mutex::new(MouseEventData::new(0.0, 0.0)));
