@@ -2,7 +2,10 @@ mod utils;
 
 use rdev::{listen, Event, EventType};
 use serde_json::json;
-use std::io::{BufWriter, Write};
+use std::{
+    io::{BufWriter, Write},
+    time::UNIX_EPOCH,
+};
 use utils::WriteData;
 
 fn main() {
@@ -19,6 +22,12 @@ fn main() {
 fn format_event(event: &Event) -> String {
     // println!("Event: {:?}", event);
 
+    let time_since_epoch = event
+        .time
+        .duration_since(UNIX_EPOCH)
+        .expect("Time went backwards")
+        .as_nanos();
+
     let json = match event.event_type {
         EventType::KeyPress(key) => {
             json!({ "keyPress": format!("{:?}", key) })
@@ -33,7 +42,7 @@ fn format_event(event: &Event) -> String {
             json!({ "buttonRelease": format!("{:?}", button) })
         }
         EventType::MouseMove { x, y } => {
-            json!({ "mouseMove": { "x": x, "y": y }
+            json!({ "mouseMove": { "x": x, "y": y, "time": time_since_epoch }
             })
         }
         _ => {
