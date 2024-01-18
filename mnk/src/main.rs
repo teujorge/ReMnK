@@ -26,7 +26,7 @@ fn format_event(event: &Event) -> String {
         .time
         .duration_since(UNIX_EPOCH)
         .expect("Time went backwards")
-        .as_nanos();
+        .as_micros() as f64;
 
     let json = match event.event_type {
         EventType::KeyPress(key) => {
