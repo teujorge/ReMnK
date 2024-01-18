@@ -1,4 +1,3 @@
-use std::io::Read;
 use std::sync::mpsc::Sender;
 
 #[cfg(windows)]
@@ -52,6 +51,8 @@ fn handle_ipc_unix(tx: Sender<String>) {
 
 #[cfg(windows)]
 fn handle_ipc_windows(tx: Sender<String>) {
+    use std::io::Read;
+
     let connection = PipeOptions::new(IPC_PIPE_NAME)
         .first(true)
         .single()
