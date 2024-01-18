@@ -5,16 +5,16 @@ import { MnkData, useMnkData } from "@/app/hooks/useMnkData";
 export default function VisualMnK() {
   const mnkData = useMnkData();
 
-  function mnkValueToString(value: Required<MnkData>[keyof MnkData]): string {
+  function mnkPropertyToString(mnk: Required<MnkData>[keyof MnkData]): string {
     // mouseMove and wheel are objects
-    if (typeof value === "object") {
-      return Object.entries(value)
+    if (typeof mnk === "object") {
+      return Object.entries(mnk)
         .map(([key, value]) => `${key}: ${value.toFixed(0)}`)
         .join(", ");
     }
 
     // others
-    return value.toString();
+    return mnk.toString();
   }
 
   return (
@@ -25,7 +25,7 @@ export default function VisualMnK() {
           key={key}
         >
           <strong className="mb-2">{key}:</strong>
-          <div className="w-full">{mnkValueToString(value)}</div>
+          <div className="w-full">{mnkPropertyToString(value)}</div>
         </div>
       ))}
     </div>
