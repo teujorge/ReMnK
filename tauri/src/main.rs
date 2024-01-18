@@ -3,54 +3,30 @@
 
 // Import necessary modules
 mod controller;
+mod ipc;
 
 // Import necessary crates
 use crate::controller::{virtualize_controller, MouseEventData};
-use std::io::{BufRead, BufReader};
-use std::os::unix::net::{UnixListener, UnixStream};
 use std::process::{Child, Command};
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::{fs, thread};
 use tauri::Manager;
 
-// #[cfg(windows)]
-// use named_pipe::PipeServer;
-// #[cfg(unix)]
-// use uds::UnixListener;
-
 fn main() {
     // Create a channel for thread communication
     let (tx, rx): (Sender<String>, Receiver<String>) = mpsc::channel();
 
     // Delete the existing socket file if it exists
-    let socket_path = "/tmp/remnk.socket";
-    let _ = fs::remove_file(socket_path);
+    let _ = fs::remove_file(ipc::IPC_SOCKET_PATH);
 
     // Create a mutex for the previous mouse event
     let mutex_prev_mouse_event_data = Arc::new(Mutex::new(MouseEventData::new(0.0, 0.0)));
 
     // Run IPC server in a separate thread
     thread::spawn(move || {
-        // #[cfg(windows)]
-        //   let listener = /* Setup named pipe server */;
-        #[cfg(unix)]
-        let listener =
-            UnixListener::bind("/tmp/remnk.socket").expect("Failed to bind to IPC socket");
-
-        println!("IPC server started");
-        for stream in listener.incoming() {
-            match stream {
-                Ok(stream) => {
-                    println!("New connection established");
-                    let tx = tx.clone();
-                    thread::spawn(move || handle_client(stream, tx));
-                }
-                Err(e) => {
-                    eprintln!("Error in IPC server: {}", e);
-                }
-            }
-        }
+        println!("IPC server starting...");
+        ipc::handle_ipc(tx);
     });
 
     // Start the listener binary (mnk)
@@ -106,24 +82,6 @@ fn main() {
         .run(tauri::generate_context!())
         // Handle the Tauri app's error
         .expect("error while running tauri application");
-}
-
-// Handle a new client connection
-fn handle_client(stream: UnixStream, tx: Sender<String>) {
-    let reader = BufReader::new(stream);
-    for line in reader.lines() {
-        match line {
-            Ok(key_str) => {
-                // println!("handle_client Received key: {}", key_str);
-                tx.send(key_str)
-                    .expect("Failed to send key message to Tauri");
-            }
-            Err(e) => {
-                eprintln!("Failed to read from IPC stream: {}", e);
-                break;
-            }
-        }
-    }
 }
 
 // Start the listener binary (mnk)

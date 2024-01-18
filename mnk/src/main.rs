@@ -1,11 +1,12 @@
+mod utils;
+
 use rdev::{listen, Event, EventType};
 use serde_json::json;
 use std::io::{BufWriter, Write};
-use std::os::unix::net::UnixStream;
+use utils::WriteData;
 
 fn main() {
-    let stream = UnixStream::connect("/tmp/remnk.socket").expect("Failed to connect to IPC socket");
-    let mut writer = BufWriter::new(stream);
+    let mut writer = utils::create_ipc_stream();
 
     if let Err(error) = listen(move |event| {
         let formatted_event = format_event(&event);
@@ -16,7 +17,7 @@ fn main() {
 }
 
 fn format_event(event: &Event) -> String {
-    println!("Event: {:?}", event);
+    // println!("Event: {:?}", event);
 
     let json = match event.event_type {
         EventType::KeyPress(key) => {
@@ -32,7 +33,7 @@ fn format_event(event: &Event) -> String {
             json!({ "buttonRelease": format!("{:?}", button) })
         }
         EventType::MouseMove { x, y } => {
-            json!({ "mouseMove": { "x": x,       "y": y        }
+            json!({ "mouseMove": { "x": x, "y": y }
             })
         }
         _ => {
@@ -42,8 +43,8 @@ fn format_event(event: &Event) -> String {
     return json.to_string() + "\n";
 }
 
-fn handle_and_send_event(writer: &mut BufWriter<UnixStream>, message: &str) {
-    if message == "" {
+fn handle_and_send_event<W: WriteData>(writer: &mut BufWriter<W>, message: &str) {
+    if message.is_empty() {
         return;
     }
 
