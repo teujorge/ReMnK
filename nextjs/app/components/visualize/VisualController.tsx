@@ -54,7 +54,9 @@ export default function VisualController() {
         <div
           className="joystick__inner"
           style={{
-            transform: `translate(${controllerData.analogLeftX}px, ${controllerData.analogLeftY}px)`,
+            transform: `
+              translate(${controllerData.analogLeftX / 10}px,
+              ${controllerData.analogLeftY / 10}px)`,
           }}
         />
       </div>
@@ -71,7 +73,9 @@ export default function VisualController() {
         <div
           className="joystick__inner"
           style={{
-            transform: `translate(${controllerData.analogRightX}px, ${controllerData.analogRightY}px)`,
+            transform: `
+              translate(${controllerData.analogRightX / 10}px,
+              ${controllerData.analogRightY / 10}px)`,
           }}
         />
       </div>
