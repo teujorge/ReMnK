@@ -25,11 +25,12 @@ ReMnK is an innovative monorepo project that comprises a NextJS frontend, a Taur
 
 ### Prerequisites
 
-- Node.js
-- Rust
-- Tauri CLI
+- [Node.js](https://nodejs.org/en/download/)
+- [Rust](https://www.rust-lang.org/learn/get-started)
 
-### Installation (created by ChatGPT ... take this with a grain of salt ... will fix this in the future! <3)
+Read more about [Tauri](https://tauri.app/v1/guides/getting-started/prerequisites).
+
+### Installation
 
 Clone the repository and navigate to the project directory:
 
@@ -41,16 +42,15 @@ cd <repository-name>
 Install the dependencies for each component:
 
 ```bash
+# For the Tauri application
+cargo install tauri-cli
+
 # For the NextJS frontend
 cd nextjs
 npm install
 
-# For the Tauri application
-cd tauri-app
-cargo tauri deps
-
 # For the Rust Listener
-cd rust-listener
+cd mnk
 cargo build --release
 ```
 
