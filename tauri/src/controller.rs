@@ -197,11 +197,11 @@ pub fn handle_no_mouse_events(
     handle: &AppHandle,
     mutex_prev_mouse_event_data: Arc<Mutex<MouseEventData>>,
 ) {
-    let debounce_duration = Duration::from_millis(100); // example debounce time
-    let inactivity_threshold = Duration::from_millis(100); // threshold for inactivity
+    let sleep_duration = Duration::from_millis(50);
+    let inactivity_threshold = Duration::from_millis(50);
 
     loop {
-        std::thread::sleep(debounce_duration);
+        std::thread::sleep(sleep_duration);
 
         let current_time = SystemTime::now()
             .duration_since(UNIX_EPOCH)
