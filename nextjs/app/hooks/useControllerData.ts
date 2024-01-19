@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Event, listen } from "@tauri-apps/api/event";
 
+export const MAX_ANALOG_VALUE = 10;
+
 export type ControllerData = {
   padUp: boolean;
   padDown: boolean;
@@ -155,28 +157,28 @@ function handleCommand(
         newState.buttonL3 = false;
         break;
       case "press_l3_right":
-        newState.analogLeftX = 10;
+        newState.analogLeftX = MAX_ANALOG_VALUE;
         break;
       case "release_l3_right":
-        if (newState.analogLeftX == 10) newState.analogLeftX = 0;
+        if (newState.analogLeftX == MAX_ANALOG_VALUE) newState.analogLeftX = 0;
         break;
       case "press_l3_left":
-        newState.analogLeftX = -10;
+        newState.analogLeftX = -MAX_ANALOG_VALUE;
         break;
       case "release_l3_left":
-        if (newState.analogLeftX == -10) newState.analogLeftX = 0;
+        if (newState.analogLeftX == -MAX_ANALOG_VALUE) newState.analogLeftX = 0;
         break;
       case "press_l3_up":
-        newState.analogLeftY = -10;
+        newState.analogLeftY = -MAX_ANALOG_VALUE;
         break;
       case "release_l3_up":
-        if (newState.analogLeftY == -10) newState.analogLeftY = 0;
+        if (newState.analogLeftY == -MAX_ANALOG_VALUE) newState.analogLeftY = 0;
         break;
       case "press_l3_down":
-        newState.analogLeftY = 10;
+        newState.analogLeftY = MAX_ANALOG_VALUE;
         break;
       case "release_l3_down":
-        if (newState.analogLeftY == 10) newState.analogLeftY = 0;
+        if (newState.analogLeftY == MAX_ANALOG_VALUE) newState.analogLeftY = 0;
         break;
 
       // Right Analog
@@ -191,8 +193,8 @@ function handleCommand(
 
             // TODO: remove ... this is temporary and adjustments should be done in BE
 
-            newState.analogRightX /= 10;
-            newState.analogRightY /= 10;
+            newState.analogRightX /= 100;
+            newState.analogRightY /= 100;
           }
         }
         break;

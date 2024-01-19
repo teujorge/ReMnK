@@ -1,9 +1,17 @@
 "use client";
 
-import { useControllerData } from "@/app/hooks/useControllerData";
+import {
+  MAX_ANALOG_VALUE,
+  useControllerData,
+} from "@/app/hooks/useControllerData";
 
 export default function VisualController() {
   const controllerData = useControllerData();
+
+  const { x: leftX, y: leftY } = transformLeftJoystick(
+    controllerData.analogLeftX,
+    controllerData.analogLeftY
+  );
 
   return (
     <div className="controller">
@@ -53,11 +61,7 @@ export default function VisualController() {
       <div className={`joystick ${controllerData.buttonL3 ? "active" : ""}`}>
         <div
           className="joystick__inner"
-          style={{
-            transform: `
-              translate(${controllerData.analogLeftX / 10}px,
-              ${controllerData.analogLeftY / 10}px)`,
-          }}
+          style={{ transform: `translate(${leftX}px, ${leftY}px)` }}
         />
       </div>
 
@@ -73,12 +77,30 @@ export default function VisualController() {
         <div
           className="joystick__inner"
           style={{
-            transform: `
-              translate(${controllerData.analogRightX / 10}px,
-              ${controllerData.analogRightY / 10}px)`,
+            transform: `translate(${Math.min(
+              controllerData.analogRightX,
+              MAX_ANALOG_VALUE
+            )}px, ${Math.min(
+              controllerData.analogRightY,
+              MAX_ANALOG_VALUE
+            )}px)`,
           }}
         />
       </div>
     </div>
   );
+}
+
+// function to transform the square bounds of the left joystick into a circle
+function transformLeftJoystick(x: number, y: number): { x: number; y: number } {
+  const isXMoved = Math.abs(x) > 0;
+  const isYMoved = Math.abs(y) > 0;
+
+  if (isXMoved && isYMoved) {
+    const angle = Math.atan2(y, x);
+    x = Math.cos(angle) * MAX_ANALOG_VALUE;
+    y = Math.sin(angle) * MAX_ANALOG_VALUE;
+  }
+
+  return { x, y };
 }
